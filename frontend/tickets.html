@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Enterprise Ticket Service</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    >
+
+    <!-- Shared CSS -->
+    <link
+        rel="stylesheet"
+        href="assets/style/style.css"
+    >
+
+</head>
+
+
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- =====================================
+         Ticket Dashboard
+    ====================================== -->
+
+    <main class="ticket-page">
+
+
+        <!-- =====================================
+             Page Header
+        ====================================== -->
+
+        <header class="ticket-header">
+
+            <div>
+
+                <p class="page-label">
+                    Enterprise Support
+                </p>
+
+                <h1>
+                    Ticket Service
+                </h1>
+
+                <p class="page-description">
+                    Create, assign, track and resolve
+                    enterprise support requests.
+                </p>
+
+            </div>
+
+
+            <div class="flex flex-wrap items-center gap-3">
+
+                <a
+                    href="index.html"
+                    class="
+                        secondary-button
+                        no-underline
+                    "
+                >
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+
+                    Dashboard
+                </a>
+
+
+                <button
+                    id="refreshTicketsButton"
+                    class="secondary-button"
+                    type="button"
+                >
+                    <i class="fa-solid fa-rotate mr-2"></i>
+
+                    Refresh Tickets
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================
+             Success / Error Message
+        ====================================== -->
+
+        <section
+            id="messageBox"
+            class="message-box hidden"
+            aria-live="polite"
+        ></section>
+
+
+        <!-- =====================================
+             Ticket Statistics
+        ====================================== -->
+
+        <section class="ticket-statistics">
+
+            <article class="stat-card">
+
+                <span class="stat-label">
+                    Total Tickets
+                </span>
+
+                <strong
+                    id="totalTickets"
+                    class="stat-value"
+                >
+                    0
+                </strong>
+
+            </article>
+
+
+            <article class="stat-card">
+
+                <span class="stat-label">
+                    Open
+                </span>
+
+                <strong
+                    id="openTickets"
+                    class="stat-value"
+                >
+                    0
+                </strong>
+
+            </article>
+
+
+            <article class="stat-card">
+
+                <span class="stat-label">
+                    In Progress
+                </span>
+
+                <strong
+                    id="inProgressTickets"
+                    class="stat-value"
+                >
+                    0
+                </strong>
+
+            </article>
+
+
+            <article class="stat-card">
+
+                <span class="stat-label">
+                    Critical
+                </span>
+
+                <strong
+                    id="criticalTickets"
+                    class="stat-value"
+                >
+                    0
+                </strong>
+
+            </article>
+
+        </section>
+
+
+        <!-- =====================================
+             Main Content
+        ====================================== -->
+
+        <section class="ticket-content">
+
+
+            <!-- =====================================
+                 Create Ticket Form
+            ====================================== -->
+
+            <article class="ticket-panel create-ticket-panel">
+
+                <div class="panel-header">
+
+                    <h2>
+                        Create Ticket
+                    </h2>
+
+                    <p>
+                        Enter the support request details.
+                    </p>
+
+                </div>
+
+
+                <form id="ticketForm">
+
+
+                    <!-- Ticket Title -->
+
+                    <label for="ticketTitle">
+
+                        Ticket Title
+
+                        <input
+                            id="ticketTitle"
+                            name="title"
+                            type="text"
+                            maxlength="255"
+                            placeholder="Example: Adobe installation failed"
+                            required
+                        >
+
+                    </label>
+
+
+                    <!-- Description -->
+
+                    <label for="ticketDescription">
+
+                        Description
+
+                        <textarea
+                            id="ticketDescription"
+                            name="description"
+                            rows="5"
+                            placeholder="Describe the issue in detail"
+                            required
+                        ></textarea>
+
+                    </label>
+
+
+                    <!-- Category and Priority -->
+
+                    <div class="form-row">
+
+                        <label for="ticketCategory">
+
+                            Category
+
+                            <select
+                                id="ticketCategory"
+                                name="category"
+                            >
+
+                                <option value="General">
+                                    General
+                                </option>
+
+                                <option value="Application">
+                                    Application
+                                </option>
+
+                                <option value="Device">
+                                    Device
+                                </option>
+
+                                <option value="User Access">
+                                    User Access
+                                </option>
+
+                                <option value="Compliance">
+                                    Compliance
+                                </option>
+
+                                <option value="Network">
+                                    Network
+                                </option>
+
+                            </select>
+
+                        </label>
+
+
+                        <label for="ticketPriority">
+
+                            Priority
+
+                            <select
+                                id="ticketPriority"
+                                name="priority"
+                            >
+
+                                <option value="Low">
+                                    Low
+                                </option>
+
+                                <option
+                                    value="Medium"
+                                    selected
+                                >
+                                    Medium
+                                </option>
+
+                                <option value="High">
+                                    High
+                                </option>
+
+                                <option value="Critical">
+                                    Critical
+                                </option>
+
+                            </select>
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- Requester Name -->
+
+                    <label for="requesterName">
+
+                        Requester Name
+
+                        <input
+                            id="requesterName"
+                            name="requester_name"
+                            type="text"
+                            maxlength="150"
+                            placeholder="Requester name"
+                            required
+                        >
+
+                    </label>
+
+
+                    <!-- Requester Email -->
+
+                    <label for="requesterEmail">
+
+                        Requester Email
+
+                        <input
+                            id="requesterEmail"
+                            name="requester_email"
+                            type="email"
+                            maxlength="255"
+                            placeholder="requester@example.com"
+                        >
+
+                    </label>
+
+
+                    <!-- Assigned Technician -->
+
+                    <label for="assignedTo">
+
+                        Assign To
+
+                        <input
+                            id="assignedTo"
+                            name="assigned_to"
+                            type="text"
+                            maxlength="255"
+                            placeholder="Technician name or email"
+                        >
+
+                    </label>
+
+
+                    <!-- Related Entity -->
+
+                    <div class="form-row">
+
+                        <label for="relatedEntityType">
+
+                            Related To
+
+                            <select
+                                id="relatedEntityType"
+                                name="related_entity_type"
+                            >
+
+                                <option value="general">
+                                    General
+                                </option>
+
+                                <option value="user">
+                                    User
+                                </option>
+
+                                <option value="application">
+                                    Application
+                                </option>
+
+                                <option value="device">
+                                    Device
+                                </option>
+
+                            </select>
+
+                        </label>
+
+
+                        <label for="relatedEntityId">
+
+                            Related Record ID
+
+                            <input
+                                id="relatedEntityId"
+                                name="related_entity_id"
+                                type="text"
+                                maxlength="255"
+                                placeholder="Optional database or Intune ID"
+                            >
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- Submit Button -->
+
+                    <button
+                        id="createTicketButton"
+                        class="primary-button"
+                        type="submit"
+                    >
+                        <i class="fa-solid fa-plus mr-2"></i>
+
+                        Create Ticket
+                    </button>
+
+                </form>
+
+            </article>
+
+
+            <!-- =====================================
+                 Ticket List
+            ====================================== -->
+
+            <article class="ticket-panel ticket-list-panel">
+
+                <div class="panel-header">
+
+                    <h2>
+                        Enterprise Tickets
+                    </h2>
+
+                    <p>
+                        Search, filter and manage support requests.
+                    </p>
+
+                </div>
+
+
+                <!-- Ticket Filters -->
+
+                <div class="ticket-filters">
+
+                    <label
+                        class="filter-label"
+                        for="ticketSearch"
+                    >
+
+                        Search
+
+                        <input
+                            id="ticketSearch"
+                            type="search"
+                            placeholder="Ticket number, title or requester"
+                        >
+
+                    </label>
+
+
+                    <label
+                        class="filter-label"
+                        for="statusFilter"
+                    >
+
+                        Status
+
+                        <select id="statusFilter">
+
+                            <option value="">
+                                All Statuses
+                            </option>
+
+                            <option value="Open">
+                                Open
+                            </option>
+
+                            <option value="In Progress">
+                                In Progress
+                            </option>
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Resolved">
+                                Resolved
+                            </option>
+
+                            <option value="Closed">
+                                Closed
+                            </option>
+
+                        </select>
+
+                    </label>
+
+
+                    <label
+                        class="filter-label"
+                        for="priorityFilter"
+                    >
+
+                        Priority
+
+                        <select id="priorityFilter">
+
+                            <option value="">
+                                All Priorities
+                            </option>
+
+                            <option value="Low">
+                                Low
+                            </option>
+
+                            <option value="Medium">
+                                Medium
+                            </option>
+
+                            <option value="High">
+                                High
+                            </option>
+
+                            <option value="Critical">
+                                Critical
+                            </option>
+
+                        </select>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Ticket Table -->
+
+                <div class="ticket-table-wrapper">
+
+                    <table class="ticket-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Ticket Number
+                                </th>
+
+                                <th>
+                                    Title
+                                </th>
+
+                                <th>
+                                    Priority
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Requester
+                                </th>
+
+                                <th>
+                                    Assigned To
+                                </th>
+
+                                <th>
+                                    Created
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="ticketTableBody">
+
+                            <tr>
+
+                                <td
+                                    colspan="7"
+                                    class="
+                                        p-6
+                                        text-center
+                                        text-slate-500
+                                    "
+                                >
+                                    <i
+                                        class="
+                                            fa-solid
+                                            fa-spinner
+                                            fa-spin
+                                            mr-2
+                                        "
+                                    ></i>
+
+                                    Loading tickets...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- Pagination -->
+
+                <div class="ticket-pagination">
+
+                    <button
+                        id="previousPageButton"
+                        class="secondary-button"
+                        type="button"
+                        disabled
+                    >
+                        <i class="fa-solid fa-chevron-left mr-2"></i>
+
+                        Previous
+                    </button>
+
+
+                    <span id="paginationText">
+                        Page 1
+                    </span>
+
+
+                    <button
+                        id="nextPageButton"
+                        class="secondary-button"
+                        type="button"
+                        disabled
+                    >
+                        Next
+
+                        <i class="fa-solid fa-chevron-right ml-2"></i>
+                    </button>
+
+                </div>
+
+            </article>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================
+         Ticket Detail Dialog
+    ====================================== -->
+
+    <dialog id="ticketDialog">
+
+        <div class="dialog-top-bar">
+
+            <div>
+
+                <p
+                    id="dialogTicketNumber"
+                    class="page-label"
+                >
+                    Ticket
+                </p>
+
+                <h2 id="dialogTicketTitle">
+                    Ticket Details
+                </h2>
+
+            </div>
+
+
+            <button
+                id="closeTicketDialogButton"
+                class="dialog-close-button"
+                type="button"
+                aria-label="Close ticket details"
+            >
+                &times;
+            </button>
+
+        </div>
+
+
+        <div id="ticketDialogContent">
+
+            <div class="p-8 text-center text-slate-500">
+
+                <i
+                    class="
+                        fa-solid
+                        fa-spinner
+                        fa-spin
+                        mr-2
+                    "
+                ></i>
+
+                Loading ticket details...
+
+            </div>
+
+        </div>
+
+    </dialog>
+
+
+    <!-- =====================================
+         JavaScript
+    ====================================== -->
+
+    <script src="assets/js/tickets.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Control Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/style/style.css">
+</head>
+<body class="bg-slate-100 control-panel-body">
+<main class="control-page">
+    <header class="control-hero">
+        <div>
+            <a href="index.html" class="control-back-link"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+            <p class="page-label">Microsoft Intune Administration</p>
+            <h1>Enterprise Control Panel</h1>
+            <p class="control-hero-description">Inspect enterprise inventory, prepare protected actions, and track planned changes from one workspace.</p>
+        </div>
+        <div class="control-hero-actions">
+            <div id="controlConnectionStatus" class="control-connection-badge control-connection-loading">
+                <span class="control-status-dot"></span>
+                <span id="controlConnectionText">Loading inventory</span>
+            </div>
+            <button id="refreshControlPanelButton" class="primary-button" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+        </div>
+    </header>
+
+    <section class="control-safety-banner">
+        <div class="control-safety-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div>
+            <strong>Frontend preview mode</strong>
+            <p>Action buttons create reviewable plans and local job previews only. They do not change Microsoft Intune or Microsoft Entra until protected backend action endpoints are connected.</p>
+        </div>
+    </section>
+
+    <section class="control-command-card">
+        <div class="control-command-heading">
+            <div>
+                <p class="page-label">Natural-language planner</p>
+                <h2>What would you like to manage?</h2>
+                <p>Try “Enable userABC”, “Sync LAPTOP-01”, or “Check non-compliant devices”.</p>
+            </div>
+            <div class="control-command-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        </div>
+        <form id="controlCommandForm" class="control-command-form">
+            <textarea id="controlCommandInput" rows="2" maxlength="500" placeholder="Describe an enterprise management action..." required></textarea>
+            <button id="analyseControlCommandButton" class="primary-button" type="submit"><i class="fa-solid fa-magnifying-glass-chart"></i> Process </button>
+        </form>
+        <div id="controlCommandFeedback" class="control-command-feedback hidden" role="status"></div>
+    </section>
+
+    <section class="control-statistics">
+        <article class="control-stat-card"><div class="control-stat-icon control-stat-icon-users"><i class="fa-solid fa-users"></i></div><div><span class="control-stat-label">Users</span><strong id="controlUserCount" class="control-stat-value">--</strong><small id="controlUserBreakdown">Loading</small></div></article>
+        <article class="control-stat-card"><div class="control-stat-icon control-stat-icon-apps"><i class="fa-solid fa-box"></i></div><div><span class="control-stat-label">Applications</span><strong id="controlApplicationCount" class="control-stat-value">--</strong><small id="controlApplicationBreakdown">Loading</small></div></article>
+        <article class="control-stat-card"><div class="control-stat-icon control-stat-icon-devices"><i class="fa-solid fa-laptop"></i></div><div><span class="control-stat-label">Managed Devices</span><strong id="controlDeviceCount" class="control-stat-value">--</strong><small id="controlDeviceBreakdown">Loading</small></div></article>
+        <article class="control-stat-card"><div class="control-stat-icon control-stat-icon-actions"><i class="fa-solid fa-list-check"></i></div><div><span class="control-stat-label">Planned Actions</span><strong id="controlPlannedActionCount" class="control-stat-value">0</strong><small>Stored in this browser</small></div></article>
+    </section>
+
+    <nav class="control-tabs" aria-label="Control Panel sections">
+        <button class="control-tab control-tab-active" type="button" data-control-tab="overview"><i class="fa-solid fa-grid-2"></i> Overview</button>
+        <button class="control-tab" type="button" data-control-tab="users"><i class="fa-solid fa-user-shield"></i> Users</button>
+        <button class="control-tab" type="button" data-control-tab="applications"><i class="fa-solid fa-box-open"></i> Applications</button>
+        <button class="control-tab" type="button" data-control-tab="devices"><i class="fa-solid fa-desktop"></i> Devices</button>
+        <button class="control-tab" type="button" data-control-tab="compliance"><i class="fa-solid fa-shield"></i> Compliance</button>
+        <button class="control-tab" type="button" data-control-tab="jobs"><i class="fa-solid fa-bars-progress"></i> Action Jobs</button>
+        <button class="control-tab" type="button" data-control-tab="audit"><i class="fa-solid fa-clock-rotate-left"></i> Audit Log</button>
+    </nav>
+
+    <section class="control-section" data-control-section="overview">
+        <div class="control-section-heading"><div><h2>Tenant Overview</h2><p>Current inventory health and suggested review areas.</p></div></div>
+        <div class="control-overview-grid">
+            <article class="control-panel-card"><div class="control-panel-card-heading"><h3>User Accounts</h3><span class="status-pill status-pill-info">Live inventory</span></div><div id="overviewUserHealth" class="control-health-list"></div><button class="secondary-button" type="button" data-open-control-tab="users">Review users</button></article>
+            <article class="control-panel-card"><div class="control-panel-card-heading"><h3>Application Estate</h3><span class="status-pill status-pill-info">Live inventory</span></div><div id="overviewApplicationHealth" class="control-health-list"></div><button class="secondary-button" type="button" data-open-control-tab="applications">Review applications</button></article>
+            <article class="control-panel-card"><div class="control-panel-card-heading"><h3>Device Compliance</h3><span id="overviewComplianceBadge" class="status-pill status-pill-neutral">Checking</span></div><div id="overviewDeviceHealth" class="control-health-list"></div><button class="secondary-button" type="button" data-open-control-tab="compliance">Review compliance</button></article>
+            <article class="control-panel-card"><div class="control-panel-card-heading"><h3>Protected Actions</h3><span class="status-pill status-pill-warning">Preview only</span></div><div class="control-health-list"><div><span>User enable or disable</span><strong>Plannable</strong></div><div><span>Device synchronization</span><strong>Plannable</strong></div><div><span>Application deletion</span><strong>Plannable</strong></div></div><button class="secondary-button" type="button" data-open-control-tab="jobs">View action jobs</button></article>
+        </div>
+    </section>
+
+    <section class="control-section hidden" data-control-section="users">
+        <div class="control-section-heading"><div><h2>User Controls</h2><p>Inspect account status and prepare enable or disable actions.</p></div></div>
+        <div class="control-toolbar"><label><span>Search users</span><input id="controlUserSearch" type="search" placeholder="Name, email, or UPN"></label><label><span>Account status</span><select id="controlUserStatusFilter"><option value="all">All users</option><option value="enabled">Enabled</option><option value="disabled">Disabled</option><option value="unknown">Unknown</option></select></label></div>
+        <div class="control-table-wrapper"><table class="control-table"><thead><tr><th>User</th><th>Email / UPN</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead><tbody id="controlUsersTableBody"></tbody></table></div>
+        <p id="controlUsersEmpty" class="control-empty-state hidden">No matching users were found.</p>
+    </section>
+
+    <section class="control-section hidden" data-control-section="applications">
+        <div class="control-section-heading"><div><h2>Application Controls</h2><p>Review publishing state and prepare assignment or deletion plans.</p></div><button id="controlAddApplicationButton" class="primary-button" type="button"><i class="fa-solid fa-plus"></i> Add Application</button></div>
+        <div class="control-toolbar"><label><span>Search applications</span><input id="controlApplicationSearch" type="search" placeholder="Application or publisher"></label><label><span>Publishing state</span><select id="controlApplicationStateFilter"><option value="all">All states</option><option value="published">Published</option><option value="processing">Processing</option><option value="unpublished">Unpublished</option><option value="unknown">Unknown</option></select></label></div>
+        <div class="control-table-wrapper"><table class="control-table"><thead><tr><th>Application</th><th>Publisher</th><th>Type</th><th>State</th><th>Version</th><th>Actions</th></tr></thead><tbody id="controlApplicationsTableBody"></tbody></table></div>
+        <p id="controlApplicationsEmpty" class="control-empty-state hidden">No matching applications were found.</p>
+    </section>
+
+    <section class="control-section hidden" data-control-section="devices">
+        <div class="control-section-heading"><div><h2>Device Controls</h2><p>Review managed devices and prepare synchronization or restart actions.</p></div></div>
+        <div class="control-toolbar"><label><span>Search devices</span><input id="controlDeviceSearch" type="search" placeholder="Device, user, model, or OS"></label><label><span>Compliance</span><select id="controlDeviceComplianceFilter"><option value="all">All devices</option><option value="compliant">Compliant</option><option value="noncompliant">Non-compliant</option><option value="unknown">Unknown</option></select></label></div>
+        <div class="control-table-wrapper"><table class="control-table"><thead><tr><th>Device</th><th>User</th><th>Operating System</th><th>Hardware</th><th>Compliance</th><th>Actions</th></tr></thead><tbody id="controlDevicesTableBody"></tbody></table></div>
+        <p id="controlDevicesEmpty" class="control-empty-state hidden">No matching devices were found.</p>
+    </section>
+
+    <section class="control-section hidden" data-control-section="compliance">
+        <div class="control-section-heading"><div><h2>Compliance Review</h2><p>Inventory-based triage of non-compliant and unknown devices.</p></div><button id="analyseComplianceButton" class="primary-button" type="button"><i class="fa-solid fa-stethoscope"></i> Analyse Issues</button></div>
+        <div id="controlComplianceSummary" class="control-compliance-summary"></div>
+        <div id="controlComplianceIssues" class="control-issue-grid"></div>
+    </section>
+
+    <section class="control-section hidden" data-control-section="jobs">
+        <div class="control-section-heading"><div><h2>Action Jobs</h2><p>Locally stored action previews awaiting backend execution support.</p></div><button id="clearControlJobsButton" class="secondary-button" type="button"><i class="fa-solid fa-trash"></i> Clear previews</button></div>
+        <div class="control-table-wrapper"><table class="control-table"><thead><tr><th>Job ID</th><th>Action</th><th>Target</th><th>Risk</th><th>Status</th><th>Created</th></tr></thead><tbody id="controlJobsTableBody"></tbody></table></div>
+        <p id="controlJobsEmpty" class="control-empty-state hidden">No action previews have been created.</p>
+    </section>
+
+    <section class="control-section hidden" data-control-section="audit">
+        <div class="control-section-heading"><div><h2>Local Audit Log</h2><p>Browser-side activity history for the frontend prototype.</p></div><button id="clearControlAuditButton" class="secondary-button" type="button"><i class="fa-solid fa-eraser"></i> Clear log</button></div>
+        <div class="control-table-wrapper"><table class="control-table"><thead><tr><th>Time</th><th>Event</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="controlAuditTableBody"></tbody></table></div>
+        <p id="controlAuditEmpty" class="control-empty-state hidden">No local audit events are available.</p>
+    </section>
+</main>
+
+<dialog id="controlActionDialog" class="control-dialog">
+    <form method="dialog" class="control-dialog-shell">
+        <div class="control-dialog-header"><div><p class="page-label">Protected action review</p><h2 id="controlActionDialogTitle">Review Action</h2></div><button class="dialog-close-button" type="button" id="closeControlActionDialogButton" aria-label="Close">&times;</button></div>
+        <div id="controlActionRiskBanner" class="control-risk-banner"></div>
+        <dl id="controlActionDetails" class="control-action-details"></dl>
+        <label id="controlTypedConfirmationLabel" class="control-typed-confirmation hidden"><span>Type <strong id="controlConfirmationPhrase">CONFIRM</strong> to continue</span><input id="controlTypedConfirmationInput" type="text" autocomplete="off"></label>
+        <p class="control-dialog-note">This frontend build stores a preview job only. No Microsoft Graph write request will be sent.</p>
+        <div class="control-dialog-actions"><button id="cancelControlActionButton" class="secondary-button" type="button">Cancel</button><button id="confirmControlActionButton" class="primary-button" type="button">Queue Preview</button></div>
+    </form>
+</dialog>
+
+<div id="controlToast" class="control-toast" role="status" aria-live="polite"></div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/control-panel.js"></script>
+</body>
+</html>

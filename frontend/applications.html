@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Enterprise Applications</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<link rel="stylesheet" href="assets/style/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body class="bg-slate-100">
+
+<div class="max-w-7xl mx-auto p-6">
+
+<!-- ================= HEADER ================= -->
+
+<div class="bg-white rounded-3xl shadow-lg border border-slate-200 p-8">
+
+<div class="flex justify-between items-center">
+
+<div>
+
+<h1 class="text-4xl font-bold text-slate-800">
+
+Enterprise Applications
+
+</h1>
+
+<p class="text-slate-500 mt-2">
+
+Manage every application deployed through Microsoft Intune.
+
+</p>
+
+</div>
+
+<div class="flex gap-4">
+
+<a href="index.html"
+class="px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition">
+
+<i class="fa-solid fa-house mr-2"></i>
+
+Dashboard
+
+</a>
+
+<button
+id="refreshApps"
+class="px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition">
+
+<i class="fa-solid fa-rotate mr-2"></i>
+
+Refresh
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/style/style.css">
+
+<!-- ================= SUMMARY ================= -->
+
+<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
+
+<div class="bg-white rounded-3xl shadow-lg border p-6">
+
+<div class="flex justify-between">
+
+<div>
+
+<p class="text-slate-500">
+
+Applications
+
+</p>
+
+<h2 id="appCount"
+class="text-4xl font-bold mt-3 text-blue-600">
+
+--
+
+</h2>
+
+</div>
+
+<div
+class="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center">
+
+<i class="fa-solid fa-box text-blue-600 text-2xl"></i>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="bg-white rounded-3xl shadow-lg border p-6">
+
+<div class="flex justify-between">
+
+<div>
+
+<p class="text-slate-500">
+
+Windows Apps
+
+</p>
+
+<h2 id="windowsCount"
+class="text-4xl font-bold mt-3 text-indigo-600">
+
+--
+
+</h2>
+
+</div>
+
+<div
+class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center">
+
+<i class="fa-brands fa-windows text-indigo-600 text-2xl"></i>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="bg-white rounded-3xl shadow-lg border p-6">
+
+<div class="flex justify-between">
+
+<div>
+
+<p class="text-slate-500">
+
+macOS Apps
+
+</p>
+
+<h2 id="macCount"
+class="text-4xl font-bold mt-3 text-green-600">
+
+--
+
+</h2>
+
+</div>
+
+<div
+class="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center">
+
+<i class="fa-brands fa-apple text-green-600 text-2xl"></i>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="bg-white rounded-3xl shadow-lg border p-6">
+
+<div class="flex justify-between">
+
+<div>
+
+<p class="text-slate-500">
+
+Publishers
+
+</p>
+
+<h2 id="publisherCount"
+class="text-4xl font-bold mt-3 text-orange-600">
+
+--
+
+</h2>
+
+</div>
+
+<div
+class="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center">
+
+<i class="fa-solid fa-building text-orange-600 text-2xl"></i>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= SEARCH ================= -->
+
+<section class="mt-8">
+
+<div class="bg-white rounded-3xl shadow-lg border p-6">
+
+<div class="relative">
+
+<i class="fa-solid fa-search absolute left-5 top-4 text-slate-400"></i>
+
+<input
+
+id="searchInput"
+
+type="text"
+
+placeholder="Search Applications..."
+
+class="w-full pl-12 pr-5 py-4 rounded-xl border border-slate-300 focus:border-blue-500 outline-none">
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= CHARTS ================= -->
+
+
+<section class="grid lg:grid-cols-3 gap-6 mt-8">
+
+    <!-- Publisher -->
+
+    <div class="bg-white rounded-3xl shadow-lg border p-8">
+
+        <h2 class="font-bold text-2xl mb-6">
+            Publisher Distribution
+        </h2>
+
+        <canvas id="publisherChart"></canvas>
+
+    </div>
+
+    <!-- Publishing State -->
+
+    <div class="bg-white rounded-3xl shadow-lg border p-8">
+
+        <h2 class="font-bold text-2xl mb-6">
+            Publishing State
+        </h2>
+
+        <canvas id="publishingChart"></canvas>
+
+    </div>
+
+    <!-- Platform -->
+
+    <div class="bg-white rounded-3xl shadow-lg border p-8">
+
+    <h2 class="font-bold text-2xl mb-6">
+        Platform Distribution
+    </h2>
+
+    <div class="h-80">
+        <canvas id="platformChart"></canvas>
+    </div>
+
+</div>
+
+</section>
+
+
+
+<!-- ================= APPLICATION INVENTORY ================= -->
+
+<section class="mt-8">
+
+<div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+
+<div class="flex justify-between items-center px-8 py-6 border-b">
+
+<div>
+
+<h2 class="text-2xl font-bold text-slate-800">
+
+Application Inventory
+
+</h2>
+
+<p class="text-slate-500 mt-1">
+
+All Microsoft Intune Applications
+
+</p>
+
+</div>
+
+<div>
+
+<span
+id="applicationCount"
+class="px-4 py-2 rounded-xl bg-blue-100 text-blue-700 font-semibold">
+
+0 Applications
+
+</span>
+
+</div>
+
+</div>
+
+<div class="overflow-x-auto">
+
+<table class="w-full">
+
+<thead>
+
+<tr class="bg-slate-100 border-b">
+
+<th class="p-5 text-left">Application</th>
+
+<th class="p-5 text-left">Publisher</th>
+
+<th class="p-5 text-left">Platform</th>
+
+<th class="p-5 text-left">Version</th>
+
+<th class="p-5 text-left">Size</th>
+
+<th class="p-5 text-left">State</th>
+
+<th class="p-5 text-center">Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="applicationsTableBody">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= APPLICATION DETAILS MODAL ================= -->
+
+<div
+id="detailsModal"
+class="fixed inset-0 bg-black/40 hidden justify-center items-center z-50">
+
+<div
+class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl mx-6 overflow-hidden">
+
+<div
+class="flex justify-between items-center border-b px-8 py-6">
+
+<h2 class="text-2xl font-bold">
+
+Application Details
+
+</h2>
+
+<button
+id="closeModal"
+class="text-3xl text-slate-500 hover:text-red-500">
+
+&times;
+
+</button>
+
+</div>
+
+<div
+id="modalContent"
+class="p-8 space-y-5">
+
+<!-- Loaded dynamically -->
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="mt-12 mb-6 text-center text-slate-500">
+
+Enterprise Management Platform © 2026
+
+</footer>
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script src="assets/js/api.js"></script>
+
+<script src="assets/js/charts.js"></script>
+
+<script src="assets/js/modal.js"></script>
+
+<script src="assets/js/applications.js"></script>
+
+</body>
+
+</html>
